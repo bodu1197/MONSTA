@@ -17,6 +17,17 @@ const notoSansKr = Noto_Sans_KR({
 export const metadata: Metadata = {
   title: "돌파구 - 재능과 기회의 연결고리",
   description: "SNS 방식의 새로운 재능 마켓플레이스. 포트폴리오를 공유하고, 크리에이터를 팔로우하며, 기회를 찾아보세요.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "돌파구",
+  },
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.svg",
+  },
+  themeColor: "#0f3460",
 };
 
 export const viewport: Viewport = {

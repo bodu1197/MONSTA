@@ -1,0 +1,9 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="100" fill="#0f3460"/>
+  <path d="M256 128C256 128 320 171 320 235C320 267 299 288 256 288C213 288 192 267 192 235C192 171 256 128 256 128Z" fill="white" opacity="0.9"/>
+  <circle cx="224" cy="224" r="16" fill="#0f3460"/>
+  <circle cx="288" cy="224" r="16" fill="#0f3460"/>
+  <path d="M213 267C213 267 229 283 256 283C283 283 299 267 299 267" stroke="white" stroke-width="10" stroke-linecap="round" opacity="0.9"/>
+  <path d="M160 320C160 320 200 347 256 347C312 347 352 320 352 320" stroke="white" stroke-width="16" stroke-linecap="round" opacity="0.9"/>
+  <text x="256" y="413" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="white" text-anchor="middle">MONSTA</text>
+</svg>

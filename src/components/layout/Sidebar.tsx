@@ -90,7 +90,7 @@ export function Sidebar() {
           <DropdownMenuContent align="start" className="w-56">
             {moreLinks.map((link) => (
               <DropdownMenuItem key={link.name} asChild>
-                <Link href={link.href} className="cursor-pointer">
+                <Link key={link.href} href={link.href} className="cursor-pointer">
                   {link.name}
                 </Link>
               </DropdownMenuItem>
