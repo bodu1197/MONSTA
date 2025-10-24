@@ -59,7 +59,7 @@ export default function ReelsPage() {
               </div>
 
               {/* Info */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+              <div className="absolute bottom-0 left-0 right-0 p-4 bg-black/80">
                 <div className="flex items-center gap-2 mb-2">
                   <Avatar className="w-8 h-8">
                     <AvatarFallback className="bg-primary text-white text-xs font-semibold">

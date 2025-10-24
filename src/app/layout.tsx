@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { RightSidebar } from "@/components/layout/RightSidebar";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "sonner";
 
 const notoSansKr = Noto_Sans_KR({
   subsets: ["latin"],
@@ -52,6 +53,7 @@ export default function RootLayout({
             </div>
             <MobileNav />
           </div>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

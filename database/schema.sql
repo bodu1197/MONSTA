@@ -12,8 +12,8 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   email VARCHAR(255) UNIQUE NOT NULL,
-  username VARCHAR(50) UNIQUE NOT NULL,
-  full_name VARCHAR(100),
+  shop_id VARCHAR(20) UNIQUE NOT NULL,
+  shop_name VARCHAR(5),
   profile_photo_url TEXT,
   bio TEXT,
   user_type VARCHAR(20) DEFAULT 'buyer' CHECK (user_type IN ('buyer', 'seller', 'both')),
@@ -22,12 +22,14 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 
   -- 제약조건
-  CONSTRAINT username_length CHECK (length(username) >= 3 AND length(username) <= 50),
+  CONSTRAINT shop_id_length CHECK (length(shop_id) >= 3 AND length(shop_id) <= 20),
+  CONSTRAINT shop_id_format CHECK (shop_id ~* '^[a-zA-Z0-9_]+$'),
+  CONSTRAINT shop_name_length CHECK (length(shop_name) >= 2 AND length(shop_name) <= 5),
   CONSTRAINT email_format CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
 );
 
 -- users 인덱스
-CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_users_shop_id ON users(shop_id);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_user_type ON users(user_type);
 CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at DESC);

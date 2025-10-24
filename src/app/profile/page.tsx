@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { UserTypeToggle } from "@/components/profile/UserTypeToggle"
 
 // 임시 데이터
 const userProfile = {
@@ -203,6 +204,11 @@ export default function ProfilePage() {
           </div>
         </div>
       </Card>
+
+      {/* User Type Toggle */}
+      <div className="mb-6">
+        <UserTypeToggle currentType="buyer" />
+      </div>
 
       {/* Content Tabs */}
       <Tabs defaultValue="portfolio" className="w-full">
