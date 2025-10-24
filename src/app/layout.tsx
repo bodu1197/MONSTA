@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Noto_Sans_KR } from "next/font/google";
+import "@fontsource-variable/noto-sans-kr";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
@@ -7,12 +7,6 @@ import { MobileNav } from "@/components/layout/MobileNav";
 import { RightSidebar } from "@/components/layout/RightSidebar";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
-
-const notoSansKr = Noto_Sans_KR({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-noto-sans-kr",
-});
 
 export const metadata: Metadata = {
   title: "돌파구 - 재능과 기회의 연결고리",
@@ -45,7 +39,8 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <body
-        className={`${notoSansKr.variable} antialiased no-tap-highlight`}
+        className="antialiased no-tap-highlight"
+        style={{ fontFamily: "'Noto Sans KR Variable', sans-serif" }}
       >
         <ThemeProvider
           attribute="class"
