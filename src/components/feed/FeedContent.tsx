@@ -113,7 +113,7 @@ export function FeedContent() {
 
               {/* Tags */}
               <div className="flex flex-wrap gap-1.5 md:gap-2 mb-1.5 md:mb-2">
-                {post.tags.map((tag) => (
+                {post.tags.map((tag: string) => (
                   <Link
                     key={tag}
                     href={`/tags/${tag}`}
