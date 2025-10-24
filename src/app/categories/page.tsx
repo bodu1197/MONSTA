@@ -5,6 +5,8 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { createClient } from "@/lib/supabase/server"
 
+export const revalidate = 60
+
 export default async function CategoriesPage() {
   const supabase = await createClient()
 
