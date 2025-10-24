@@ -30,58 +30,8 @@ import { Button } from '@/components/ui/button'
  */
 
 // 임시 데이터 - 실제로는 개인화 추천 API에서 가져옴
-const recommendedSellers = [
-  {
-    id: 1,
-    name: '김디자이너',
-    initials: '김',
-    specialty: 'UI/UX 디자인',
-    followers: '1.2K',
-    isVerified: true,
-    recommendReason: '관심 카테고리', // 사용자가 최근 디자인 카테고리를 많이 봄
-    matchScore: 85,
-  },
-  {
-    id: 2,
-    name: '박개발자',
-    initials: '박',
-    specialty: '풀스택 개발',
-    followers: '856',
-    isVerified: true,
-    recommendReason: '공통 팔로워 3명', // 사용자가 팔로우한 사람들도 팔로우
-    matchScore: 78,
-  },
-  {
-    id: 3,
-    name: '이영상PD',
-    initials: '이',
-    specialty: '영상 편집',
-    followers: '2.3K',
-    isVerified: false,
-    recommendReason: '검색 기록', // 사용자가 "영상편집" 검색함
-    matchScore: 72,
-  },
-  {
-    id: 4,
-    name: '최마케터',
-    initials: '최',
-    specialty: 'SNS 마케팅',
-    followers: '945',
-    isVerified: true,
-    recommendReason: '관심 카테고리', // 마케팅 관련 게시물 저장함
-    matchScore: 68,
-  },
-  {
-    id: 5,
-    name: '정작가',
-    initials: '정',
-    specialty: '콘텐츠 작성',
-    followers: '678',
-    isVerified: false,
-    recommendReason: '공통 팔로워 2명',
-    matchScore: 65,
-  },
-]
+// TODO: 실제 데이터로 교체
+const recommendedSellers: any[] = []
 
 export function RightSidebar() {
   return (

@@ -111,6 +111,9 @@ export function SignupOverlay() {
       return;
     }
 
+    // 개발 환경에서는 자동 확인, 프로덕션에서는 이메일 확인
+    const isDevelopment = process.env.NODE_ENV === 'development';
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -121,6 +124,10 @@ export function SignupOverlay() {
           shop_name: shopName,
           user_type: 'buyer',
         },
+        // 개발 환경에서만 자동 확인
+        ...(isDevelopment && {
+          emailRedirectTo: `${location.origin}/auth/callback?auto_confirm=true`
+        }),
       },
     });
 

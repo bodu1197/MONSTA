@@ -6,48 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
-// 임시 데이터
-const stories = [
-  { id: 1, username: "디자이너김", initials: "김", hasNew: true },
-  { id: 2, username: "개발자박", initials: "박", hasNew: true },
-  { id: 3, username: "영상PD", initials: "PD", hasNew: false },
-  { id: 4, username: "마케터최", initials: "최", hasNew: true },
-  { id: 5, username: "번역가이", initials: "이", hasNew: false },
-  { id: 6, username: "작가정", initials: "정", hasNew: true },
-]
-
-const posts = [
-  {
-    id: 1,
-    username: "디자이너김",
-    initials: "김",
-    image: "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=600&h=600&fit=crop",
-    likes: 1234,
-    caption: "새로운 로고 디자인 프로젝트 완성! 클라이언트가 너무 만족해주셨어요",
-    tags: ["로고디자인", "브랜딩", "미니멀"],
-    timeAgo: "2시간 전"
-  },
-  {
-    id: 2,
-    username: "개발자박",
-    initials: "박",
-    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=600&fit=crop",
-    likes: 891,
-    caption: "React + Next.js로 만든 대시보드 UI. 반응형으로 완벽 구현",
-    tags: ["웹개발", "리액트", "넥스트"],
-    timeAgo: "5시간 전"
-  },
-  {
-    id: 3,
-    username: "영상PD",
-    initials: "PD",
-    image: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=600&h=600&fit=crop",
-    likes: 567,
-    caption: "기업 홍보 영상 촬영 현장! 드론 촬영으로 멋진 앵글 확보",
-    tags: ["영상제작", "드론촬영", "기업홍보"],
-    timeAgo: "8시간 전"
-  },
-]
+// TODO: 실제 데이터로 교체
+const stories: any[] = []
+const posts: any[] = []
 
 export function FeedContent() {
   return (

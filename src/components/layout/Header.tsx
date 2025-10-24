@@ -5,8 +5,27 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { createClient } from '@/lib/supabase/client'
+import { useEffect, useState } from 'react'
+import type { User } from '@supabase/supabase-js'
 
 export function Header() {
+  const [user, setUser] = useState<User | null>(null)
+  const supabase = createClient()
+
+  useEffect(() => {
+    // 초기 사용자 가져오기
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user)
+    })
+
+    // 인증 상태 변경 구독
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
       <div className="container flex h-16 items-center justify-between px-4">
@@ -49,11 +68,21 @@ export function Header() {
               </Button>
             </Link>
 
-            <Link href="/login">
-              <Button size="sm" className="ml-2 rounded-full">
-                로그인
-              </Button>
-            </Link>
+            {user ? (
+              <Link href="/profile">
+                <Button variant="ghost" size="icon">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-semibold">
+                    {user.email?.charAt(0).toUpperCase()}
+                  </div>
+                </Button>
+              </Link>
+            ) : (
+              <Link href="/login">
+                <Button size="sm" className="ml-2 rounded-full">
+                  로그인
+                </Button>
+              </Link>
+            )}
           </div>
 
           {/* 모바일: 알림과 프로필만 표시 */}
@@ -65,13 +94,23 @@ export function Header() {
               </Button>
             </Link>
 
-            <Link href="/profile">
-              <Button variant="ghost" size="icon">
-                <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-semibold">
-                  나
-                </div>
-              </Button>
-            </Link>
+            {user ? (
+              <Link href="/profile">
+                <Button variant="ghost" size="icon">
+                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-semibold">
+                    {user.email?.charAt(0).toUpperCase()}
+                  </div>
+                </Button>
+              </Link>
+            ) : (
+              <Link href="/login">
+                <Button variant="ghost" size="icon">
+                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-semibold">
+                    로그인
+                  </div>
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>
