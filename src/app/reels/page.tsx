@@ -1,7 +1,10 @@
+'use client'
+
 import { Play, Heart } from "lucide-react"
+import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/client"
 
 function formatViews(views: number): string {
   if (views >= 1000000) {
@@ -12,29 +15,51 @@ function formatViews(views: number): string {
   return views.toString()
 }
 
-export default async function ReelsPage() {
-  const supabase = await createClient()
+export default function ReelsPage() {
+  const [loading, setLoading] = useState(true)
+  const [reels, setReels] = useState<any[]>([])
 
-  // Get video posts (reels) ordered by views
-  const { data: posts } = await supabase
-    .from("posts")
-    .select(`
-      *,
-      user:user_id(username, email)
-    `)
-    .eq("media_type", "video")
-    .order("view_count", { ascending: false })
-    .limit(12)
+  useEffect(() => {
+    async function fetchData() {
+      const supabase = createClient()
 
-  const reels = posts?.map((post: any) => ({
-    id: post.id,
-    username: post.user?.username || post.user?.email || "알 수 없음",
-    initials: (post.user?.username || post.user?.email)?.charAt(0)?.toUpperCase() || "U",
-    title: post.title || "제목 없음",
-    thumbnail: post.media_urls?.[0] || "",
-    views: formatViews(post.view_count),
-    likes: post.like_count,
-  })) || []
+      // Get video posts (reels) ordered by views
+      const { data: posts } = await supabase
+        .from("posts")
+        .select(`
+          *,
+          user:user_id(username, email)
+        `)
+        .eq("media_type", "video")
+        .order("view_count", { ascending: false })
+        .limit(12)
+
+      const reelsData = posts?.map((post: any) => ({
+        id: post.id,
+        username: post.user?.username || post.user?.email || "알 수 없음",
+        initials: (post.user?.username || post.user?.email)?.charAt(0)?.toUpperCase() || "U",
+        title: post.title || "제목 없음",
+        thumbnail: post.media_urls?.[0] || "",
+        views: formatViews(post.view_count),
+        likes: post.like_count,
+      })) || []
+
+      setReels(reelsData)
+      setLoading(false)
+    }
+
+    fetchData()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="w-full mx-auto px-4 py-8 max-w-6xl">
+        <div className="text-center py-12 text-muted-foreground">
+          로딩 중...
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="w-full mx-auto px-4 py-8 max-w-6xl">

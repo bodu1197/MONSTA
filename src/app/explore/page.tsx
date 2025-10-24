@@ -1,109 +1,137 @@
+'use client'
+
 import { Search, TrendingUp, Filter, Star } from "lucide-react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { createClient } from "@/lib/supabase/server"
-import type { Post } from "@/types/database"
+import { createClient } from "@/lib/supabase/client"
 
-export default async function ExplorePage() {
-  const supabase = await createClient()
+export default function ExplorePage() {
+  const [loading, setLoading] = useState(true)
+  const [featuredCreators, setFeaturedCreators] = useState<any[]>([])
+  const [postsWithDetails, setPostsWithDetails] = useState<any[]>([])
+  const [popularSearches, setPopularSearches] = useState<string[]>([])
 
-  // Get featured creators (users with most followers or highest rating)
-  const { data: users } = await supabase
-    .from("users")
-    .select(`
-      id,
-      username,
-      email,
-      full_name,
-      is_verified,
-      created_at
-    `)
-    .order("created_at", { ascending: false })
-    .limit(6)
+  useEffect(() => {
+    async function fetchData() {
+      const supabase = createClient()
 
-  // Get all follower counts in one query
-  const userIds = users?.map((u: any) => u.id) || []
-  const { data: followCounts } = await supabase
-    .from("follows")
-    .select("following_id")
-    .in("following_id", userIds)
+      // Get featured creators (users with most followers or highest rating)
+      const { data: users } = await supabase
+        .from("users")
+        .select(`
+          id,
+          username,
+          email,
+          full_name,
+          is_verified,
+          created_at
+        `)
+        .order("created_at", { ascending: false })
+        .limit(6)
 
-  // Get all reviews in one query
-  const { data: allReviews } = await supabase
-    .from("reviews")
-    .select("reviewee_id, rating")
-    .in("reviewee_id", userIds)
-    .eq("is_public", true)
+      // Get all follower counts in one query
+      const userIds = users?.map((u: any) => u.id) || []
+      const { data: followCounts } = await supabase
+        .from("follows")
+        .select("following_id")
+        .in("following_id", userIds)
 
-  // Create lookup maps
-  const followerCountMap = (followCounts || []).reduce((acc: any, follow: any) => {
-    acc[follow.following_id] = (acc[follow.following_id] || 0) + 1
-    return acc
-  }, {})
+      // Get all reviews in one query
+      const { data: allReviews } = await supabase
+        .from("reviews")
+        .select("reviewee_id, rating")
+        .in("reviewee_id", userIds)
+        .eq("is_public", true)
 
-  const ratingMap = (allReviews || []).reduce((acc: any, review: any) => {
-    if (!acc[review.reviewee_id]) {
-      acc[review.reviewee_id] = { sum: 0, count: 0 }
+      // Create lookup maps
+      const followerCountMap = (followCounts || []).reduce((acc: any, follow: any) => {
+        acc[follow.following_id] = (acc[follow.following_id] || 0) + 1
+        return acc
+      }, {})
+
+      const ratingMap = (allReviews || []).reduce((acc: any, review: any) => {
+        if (!acc[review.reviewee_id]) {
+          acc[review.reviewee_id] = { sum: 0, count: 0 }
+        }
+        acc[review.reviewee_id].sum += review.rating
+        acc[review.reviewee_id].count += 1
+        return acc
+      }, {})
+
+      // Map users with their stats
+      const creators = (users || []).map((user: any) => {
+        const ratingData = ratingMap[user.id]
+        const averageRating = ratingData ? ratingData.sum / ratingData.count : 0
+
+        return {
+          id: user.id,
+          username: user.username || user.email,
+          initials: (user.username || user.email)?.charAt(0)?.toUpperCase() || "U",
+          title: user.full_name || "크리에이터",
+          followers: followerCountMap[user.id] || 0,
+          rating: averageRating,
+          verified: user.is_verified,
+        }
+      })
+
+      // Get trending posts (most viewed/liked posts)
+      const { data: trendingPosts } = await supabase
+        .from("posts")
+        .select(`
+          *,
+          user:user_id(username, email)
+        `)
+        .eq("is_portfolio", true)
+        .order("view_count", { ascending: false })
+        .limit(6)
+
+      const postsData = trendingPosts?.map((post: any) => ({
+        id: post.id,
+        image: post.media_urls?.[0] || "",
+        title: post.title || "제목 없음",
+        creator: post.user?.username || post.user?.email || "알 수 없음",
+        likes: post.like_count,
+        views: post.view_count,
+      })) || []
+
+      // Get popular search tags
+      const { data: posts } = await supabase
+        .from("posts")
+        .select("tags")
+        .not("tags", "is", null)
+        .order("created_at", { ascending: false })
+        .limit(50)
+
+      // Extract unique tags
+      const tagSet = new Set<string>()
+      posts?.forEach((post) => {
+        post.tags?.forEach((tag: string) => tagSet.add(tag))
+      })
+      const tags = Array.from(tagSet).slice(0, 4)
+
+      setFeaturedCreators(creators)
+      setPostsWithDetails(postsData)
+      setPopularSearches(tags)
+      setLoading(false)
     }
-    acc[review.reviewee_id].sum += review.rating
-    acc[review.reviewee_id].count += 1
-    return acc
-  }, {})
 
-  // Map users with their stats
-  const featuredCreators = (users || []).map((user: any) => {
-    const ratingData = ratingMap[user.id]
-    const averageRating = ratingData ? ratingData.sum / ratingData.count : 0
+    fetchData()
+  }, [])
 
-    return {
-      id: user.id,
-      username: user.username || user.email,
-      initials: (user.username || user.email)?.charAt(0)?.toUpperCase() || "U",
-      title: user.full_name || "크리에이터",
-      followers: followerCountMap[user.id] || 0,
-      rating: averageRating,
-      verified: user.is_verified,
-    }
-  })
-
-  // Get trending posts (most viewed/liked posts)
-  const { data: trendingPosts } = await supabase
-    .from("posts")
-    .select(`
-      *,
-      user:user_id(username, email)
-    `)
-    .eq("is_portfolio", true)
-    .order("view_count", { ascending: false })
-    .limit(6)
-
-  const postsWithDetails = trendingPosts?.map((post: any) => ({
-    id: post.id,
-    image: post.media_urls?.[0] || "",
-    title: post.title || "제목 없음",
-    creator: post.user?.username || post.user?.email || "알 수 없음",
-    likes: post.like_count,
-    views: post.view_count,
-  })) || []
-
-  // Get popular search tags
-  const { data: posts } = await supabase
-    .from("posts")
-    .select("tags")
-    .not("tags", "is", null)
-    .order("created_at", { ascending: false })
-    .limit(50)
-
-  // Extract unique tags
-  const tagSet = new Set<string>()
-  posts?.forEach((post) => {
-    post.tags?.forEach((tag: string) => tagSet.add(tag))
-  })
-  const popularSearches = Array.from(tagSet).slice(0, 4)
+  if (loading) {
+    return (
+      <div className="w-full mx-auto px-4 py-8 max-w-6xl">
+        <div className="text-center py-12 text-muted-foreground">
+          로딩 중...
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="w-full mx-auto px-4 py-8 max-w-6xl">

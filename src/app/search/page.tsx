@@ -1,61 +1,88 @@
+'use client'
+
 import { Search } from "lucide-react"
+import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/client"
 
-export default async function SearchPage() {
-  const supabase = await createClient()
+export default function SearchPage() {
+  const [loading, setLoading] = useState(true)
+  const [creatorsWithDetails, setCreatorsWithDetails] = useState<any[]>([])
+  const [trendingTags, setTrendingTags] = useState<string[]>([])
 
-  // Fetch data in parallel for better performance
-  const [
-    { data: popularCreators },
-    { data: posts }
-  ] = await Promise.all([
-    // Get popular creators (users with most followers)
-    supabase
-      .from("users")
-      .select(`
-        id,
-        username,
-        email,
-        full_name,
-        is_verified,
-        created_at,
-        follower_count:follows!follows_following_id_fkey(count)
-      `)
-      .order("created_at", { ascending: false })
-      .limit(5),
+  useEffect(() => {
+    async function fetchData() {
+      const supabase = createClient()
 
-    // Get trending tags from recent posts
-    supabase
-      .from("posts")
-      .select("tags")
-      .not("tags", "is", null)
-      .order("created_at", { ascending: false })
-      .limit(50)
-  ])
+      // Fetch data in parallel for better performance
+      const [
+        { data: popularCreators },
+        { data: posts }
+      ] = await Promise.all([
+        // Get popular creators (users with most followers)
+        supabase
+          .from("users")
+          .select(`
+            id,
+            username,
+            email,
+            full_name,
+            is_verified,
+            created_at,
+            follower_count:follows!follows_following_id_fkey(count)
+          `)
+          .order("created_at", { ascending: false })
+          .limit(5),
 
-  // Extract and count unique tags
-  const tagCounts: { [key: string]: number } = {}
-  posts?.forEach((post) => {
-    post.tags?.forEach((tag: string) => {
-      tagCounts[tag] = (tagCounts[tag] || 0) + 1
-    })
-  })
+        // Get trending tags from recent posts
+        supabase
+          .from("posts")
+          .select("tags")
+          .not("tags", "is", null)
+          .order("created_at", { ascending: false })
+          .limit(50)
+      ])
 
-  const trendingTags = Object.entries(tagCounts)
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 6)
-    .map(([tag]) => `#${tag}`)
+      // Extract and count unique tags
+      const tagCounts: { [key: string]: number } = {}
+      posts?.forEach((post) => {
+        post.tags?.forEach((tag: string) => {
+          tagCounts[tag] = (tagCounts[tag] || 0) + 1
+        })
+      })
 
-  const creatorsWithDetails = popularCreators?.map((creator: any) => ({
-    id: creator.id,
-    name: creator.username || creator.email,
-    initials: (creator.username || creator.email)?.charAt(0)?.toUpperCase() || "U",
-    specialty: creator.full_name || "크리에이터",
-  })) || []
+      const tags = Object.entries(tagCounts)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 6)
+        .map(([tag]) => `#${tag}`)
+
+      const creators = popularCreators?.map((creator: any) => ({
+        id: creator.id,
+        name: creator.username || creator.email,
+        initials: (creator.username || creator.email)?.charAt(0)?.toUpperCase() || "U",
+        specialty: creator.full_name || "크리에이터",
+      })) || []
+
+      setCreatorsWithDetails(creators)
+      setTrendingTags(tags)
+      setLoading(false)
+    }
+
+    fetchData()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="w-full mx-auto px-4 py-8 max-w-4xl">
+        <div className="text-center py-12 text-muted-foreground">
+          로딩 중...
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="w-full mx-auto px-4 py-8 max-w-4xl">
