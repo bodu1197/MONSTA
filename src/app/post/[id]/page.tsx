@@ -67,7 +67,9 @@ const relatedPosts = [
   },
 ]
 
-export default function PostDetailPage({ params }: { params: { id: string } }) {
+export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       {/* Back Button */}
