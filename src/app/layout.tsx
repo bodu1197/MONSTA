@@ -27,7 +27,6 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
     apple: "/apple-touch-icon.svg",
   },
-  themeColor: "#0f3460",
 };
 
 export const viewport: Viewport = {
@@ -35,6 +34,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
+  themeColor: "#0f3460",
 };
 
 export default function RootLayout({
