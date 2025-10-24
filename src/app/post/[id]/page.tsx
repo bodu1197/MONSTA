@@ -71,18 +71,18 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
   const { id } = await params
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-6xl">
       {/* Back Button */}
       <Link href="/">
-        <Button variant="ghost" className="mb-6">
+        <Button variant="ghost" className="mb-4 sm:mb-6">
           <ArrowLeft className="h-4 w-4 mr-2" />
           돌아가기
         </Button>
       </Link>
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
         {/* Main Content */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6 pb-32 lg:pb-0">
           {/* Post Image */}
           <Card className="overflow-hidden">
             <div className="relative aspect-square bg-muted">
@@ -235,10 +235,10 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
 
           {/* Related Posts */}
           <div>
-            <h3 className="font-semibold text-lg mb-4">
+            <h3 className="font-semibold text-base sm:text-lg mb-3 sm:mb-4">
               {post.username}님의 다른 작업물
             </h3>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
               {relatedPosts.map((relatedPost) => (
                 <Link key={relatedPost.id} href={`/post/${relatedPost.id}`}>
                   <Card className="overflow-hidden hover:shadow-lg transition cursor-pointer border-2 hover:border-primary group">
@@ -264,8 +264,8 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           </div>
         </div>
 
-        {/* Sidebar */}
-        <div className="lg:col-span-1">
+        {/* Sidebar - Desktop */}
+        <div className="hidden lg:block lg:col-span-1">
           <Card className="p-6 sticky top-24">
             <h3 className="font-bold text-xl mb-4">작업 의뢰하기</h3>
 
@@ -304,6 +304,30 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
               </p>
             </div>
           </Card>
+        </div>
+      </div>
+
+      {/* Mobile Bottom Action Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t bg-background p-4 space-y-2">
+        <div className="flex items-center justify-between text-sm mb-2">
+          <div>
+            <span className="text-muted-foreground">가격: </span>
+            <span className="font-bold text-primary text-lg">{post.price}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+            <span className="font-semibold">4.9</span>
+            <span className="text-xs text-muted-foreground">(127)</span>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" className="flex-1">
+            <MessageCircle className="h-4 w-4 mr-2" />
+            문의
+          </Button>
+          <Button className="flex-1">
+            작업 요청
+          </Button>
         </div>
       </div>
     </div>

@@ -30,28 +30,49 @@ export function Header() {
         </div>
 
         {/* 우측 액션 버튼 */}
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
+        <div className="flex items-center gap-1 md:gap-2">
+          {/* 데스크톱: 모든 버튼 표시 */}
+          <div className="hidden md:flex items-center gap-2">
+            <ThemeToggle />
 
-          <Link href="/messages">
-            <Button variant="ghost" size="icon" className="relative">
-              <MessageCircle style={{ width: '24px', height: '24px' }} />
-              <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-destructive" />
-            </Button>
-          </Link>
+            <Link href="/messages">
+              <Button variant="ghost" size="icon" className="relative">
+                <MessageCircle style={{ width: '24px', height: '24px' }} />
+                <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-destructive" />
+              </Button>
+            </Link>
 
-          <Link href="/notifications">
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell style={{ width: '24px', height: '24px' }} />
-              <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-destructive" />
-            </Button>
-          </Link>
+            <Link href="/notifications">
+              <Button variant="ghost" size="icon" className="relative">
+                <Bell style={{ width: '24px', height: '24px' }} />
+                <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-destructive" />
+              </Button>
+            </Link>
 
-          <Link href="/login">
-            <Button size="sm" className="ml-2 rounded-full">
-              로그인
-            </Button>
-          </Link>
+            <Link href="/login">
+              <Button size="sm" className="ml-2 rounded-full">
+                로그인
+              </Button>
+            </Link>
+          </div>
+
+          {/* 모바일: 알림과 프로필만 표시 */}
+          <div className="flex md:hidden items-center gap-1">
+            <Link href="/notifications">
+              <Button variant="ghost" size="icon" className="relative">
+                <Bell style={{ width: '22px', height: '22px' }} />
+                <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive" />
+              </Button>
+            </Link>
+
+            <Link href="/profile">
+              <Button variant="ghost" size="icon">
+                <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-semibold">
+                  나
+                </div>
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
 

@@ -39,9 +39,9 @@ const trendingCategories = [
 
 export default function CategoriesPage() {
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl">
       {/* Search Section */}
-      <div className="mb-12">
+      <div className="mb-8 sm:mb-12">
         <div className="relative max-w-2xl mx-auto">
           <Search style={{ width: '20px', height: '20px' }} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -53,15 +53,15 @@ export default function CategoriesPage() {
       </div>
 
       {/* Trending Section */}
-      <section className="mb-12">
-        <div className="flex items-center gap-3 mb-6">
-          <TrendingUp style={{ width: '28px', height: '28px' }} className="text-primary" />
-          <h2 className="text-2xl font-bold">트렌딩</h2>
+      <section className="mb-8 sm:mb-12">
+        <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+          <TrendingUp style={{ width: '24px', height: '24px' }} className="text-primary sm:w-7 sm:h-7" />
+          <h2 className="text-xl sm:text-2xl font-bold">트렌딩</h2>
         </div>
-        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+        <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 scrollbar-hide">
           {trendingCategories.map((category) => (
             <Link key={category.name} href={`/search?q=${category.name}`}>
-              <Card className="p-6 min-w-[280px] hover:shadow-lg transition cursor-pointer border-2 hover:border-primary">
+              <Card className="p-4 sm:p-6 min-w-[240px] sm:min-w-[280px] hover:shadow-lg transition cursor-pointer border-2 hover:border-primary">
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="font-bold text-lg">{category.name}</h3>
                   <Badge variant="secondary" className="bg-primary/10 text-primary border-0">
@@ -79,9 +79,9 @@ export default function CategoriesPage() {
 
       {/* All Categories Grid */}
       <section>
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold mb-2">모든 카테고리</h2>
-          <p className="text-muted-foreground">
+        <div className="mb-4 sm:mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold mb-2">모든 카테고리</h2>
+          <p className="text-sm sm:text-base text-muted-foreground">
             598개의 세부 카테고리에서 원하는 서비스를 찾아보세요
           </p>
         </div>
@@ -110,19 +110,19 @@ export default function CategoriesPage() {
       </section>
 
       {/* Stats */}
-      <section className="mt-16 text-center">
-        <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto">
+      <section className="mt-12 sm:mt-16 text-center">
+        <div className="grid grid-cols-3 gap-4 sm:gap-8 max-w-3xl mx-auto">
           <div>
-            <div className="text-4xl font-bold text-primary mb-2">598</div>
-            <div className="text-sm text-muted-foreground">전체 카테고리</div>
+            <div className="text-2xl sm:text-4xl font-bold text-primary mb-1 sm:mb-2">598</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">전체 카테고리</div>
           </div>
           <div>
-            <div className="text-4xl font-bold text-primary mb-2">22</div>
-            <div className="text-sm text-muted-foreground">대분류</div>
+            <div className="text-2xl sm:text-4xl font-bold text-primary mb-1 sm:mb-2">22</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">대분류</div>
           </div>
           <div>
-            <div className="text-4xl font-bold text-primary mb-2">10K+</div>
-            <div className="text-sm text-muted-foreground">크리에이터</div>
+            <div className="text-2xl sm:text-4xl font-bold text-primary mb-1 sm:mb-2">10K+</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">크리에이터</div>
           </div>
         </div>
       </section>
