@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -174,34 +173,17 @@
   }
 }
 
-/* 모바일 스크롤 성능 최적화 */
+/* 모바일 최적화 */
 @media (max-width: 768px) {
   * {
     -webkit-overflow-scrolling: touch;
   }
 
-  /* 버튼 최소 터치 영역 확보 (44x44px) */
-  button,
-  a,
-  [role="button"] {
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  /* 작은 버튼들은 패딩으로 터치 영역 확보 */
-  button.touch-small {
-    padding: 8px;
-    min-height: 32px;
-    min-width: 32px;
-  }
-
-  /* 모바일 폰트 크기 자동 조정 방지 */
   body {
     -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
   }
 
-  /* 입력 필드 확대 방지 (iOS) */
+  /* iOS 입력 필드 확대 방지 */
   input[type="text"],
   input[type="search"],
   input[type="email"],
@@ -209,40 +191,6 @@
   textarea,
   select {
     font-size: 16px !important;
-  }
-
-  /* 모바일 스크롤 바운스 효과 */
-  .bounce-scroll {
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: contain;
-  }
-}
-
-/* 태블릿 최적화 */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .container {
-    max-width: 768px;
-  }
-}
-
-/* 가로 모드 최적화 */
-@media (orientation: landscape) and (max-height: 500px) {
-  /* 헤더 높이 줄이기 */
-  header {
-    height: 3rem;
-  }
-
-  /* 하단 네비게이션 높이 줄이기 */
-  .mobile-nav {
-    height: 3rem;
-  }
-}
-
-/* 다크모드 모바일 최적화 */
-@media (prefers-color-scheme: dark) {
-  /* iOS 상태바 색상 */
-  meta[name="theme-color"] {
-    content: oklch(0.145 0 0);
   }
 }
 
