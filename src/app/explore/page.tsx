@@ -25,36 +25,50 @@ export default async function ExplorePage() {
     .order("created_at", { ascending: false })
     .limit(6)
 
-  // Get follower counts for each user
-  const featuredCreators = await Promise.all(
-    (users || []).map(async (user: any) => {
-      const { count: followerCount } = await supabase
-        .from("follows")
-        .select("*", { count: "exact", head: true })
-        .eq("following_id", user.id)
+  // Get all follower counts in one query
+  const userIds = users?.map((u: any) => u.id) || []
+  const { data: followCounts } = await supabase
+    .from("follows")
+    .select("following_id")
+    .in("following_id", userIds)
 
-      // Get average rating from reviews
-      const { data: reviews } = await supabase
-        .from("reviews")
-        .select("rating")
-        .eq("reviewee_id", user.id)
-        .eq("is_public", true)
+  // Get all reviews in one query
+  const { data: allReviews } = await supabase
+    .from("reviews")
+    .select("reviewee_id, rating")
+    .in("reviewee_id", userIds)
+    .eq("is_public", true)
 
-      const averageRating = reviews && reviews.length > 0
-        ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
-        : 0
+  // Create lookup maps
+  const followerCountMap = (followCounts || []).reduce((acc: any, follow: any) => {
+    acc[follow.following_id] = (acc[follow.following_id] || 0) + 1
+    return acc
+  }, {})
 
-      return {
-        id: user.id,
-        username: user.username || user.email,
-        initials: (user.username || user.email)?.charAt(0)?.toUpperCase() || "U",
-        title: user.full_name || "크리에이터",
-        followers: followerCount || 0,
-        rating: averageRating,
-        verified: user.is_verified,
-      }
-    })
-  )
+  const ratingMap = (allReviews || []).reduce((acc: any, review: any) => {
+    if (!acc[review.reviewee_id]) {
+      acc[review.reviewee_id] = { sum: 0, count: 0 }
+    }
+    acc[review.reviewee_id].sum += review.rating
+    acc[review.reviewee_id].count += 1
+    return acc
+  }, {})
+
+  // Map users with their stats
+  const featuredCreators = (users || []).map((user: any) => {
+    const ratingData = ratingMap[user.id]
+    const averageRating = ratingData ? ratingData.sum / ratingData.count : 0
+
+    return {
+      id: user.id,
+      username: user.username || user.email,
+      initials: (user.username || user.email)?.charAt(0)?.toUpperCase() || "U",
+      title: user.full_name || "크리에이터",
+      followers: followerCountMap[user.id] || 0,
+      rating: averageRating,
+      verified: user.is_verified,
+    }
+  })
 
   // Get trending posts (most viewed/liked posts)
   const { data: trendingPosts } = await supabase

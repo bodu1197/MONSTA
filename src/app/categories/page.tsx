@@ -8,8 +8,8 @@ import { createClient } from "@/lib/supabase/server"
 export default async function CategoriesPage() {
   const supabase = await createClient()
 
-  // Get all categories from database
-  const { data: categories } = await supabase
+  // Get all categories in one query (both parent and children)
+  const { data: allCategories } = await supabase
     .from("categories")
     .select(`
       id,
@@ -17,57 +17,44 @@ export default async function CategoriesPage() {
       slug,
       service_count,
       is_popular,
-      parent_id
+      parent_id,
+      display_order
     `)
-    .is("parent_id", null)
     .order("display_order", { ascending: true })
 
-  // Get child count for each parent category
-  const mainCategories = await Promise.all(
-    (categories || []).map(async (category: any) => {
-      const { count: childCount } = await supabase
-        .from("categories")
-        .select("*", { count: "exact", head: true })
-        .eq("parent_id", category.id)
+  // Separate parent categories and count their children
+  const parentCategories = allCategories?.filter((cat: any) => cat.parent_id === null) || []
+  const childCategories = allCategories?.filter((cat: any) => cat.parent_id !== null) || []
 
-      return {
-        id: category.id,
-        name: category.name,
-        slug: category.slug,
-        count: childCount || 0,
-      }
-    })
-  )
+  // Count children for each parent category
+  const childCountMap = childCategories.reduce((acc: any, child: any) => {
+    acc[child.parent_id] = (acc[child.parent_id] || 0) + 1
+    return acc
+  }, {})
+
+  const mainCategories = parentCategories.map((category: any) => ({
+    id: category.id,
+    name: category.name,
+    slug: category.slug,
+    count: childCountMap[category.id] || 0,
+  }))
 
   // Get trending categories (popular categories with most posts)
-  const { data: popularCategories } = await supabase
-    .from("categories")
-    .select(`
-      id,
-      name,
-      slug,
-      service_count
-    `)
-    .eq("is_popular", true)
-    .order("service_count", { ascending: false })
-    .limit(4)
+  const trendingCategories = allCategories
+    ?.filter((cat: any) => cat.is_popular && cat.parent_id === null)
+    .sort((a: any, b: any) => (b.service_count || 0) - (a.service_count || 0))
+    .slice(0, 4)
+    .map((cat: any) => ({
+      name: cat.name,
+      count: cat.service_count || 0,
+      growth: "+0%", // Growth calculation would need historical data
+    })) || []
 
-  const trendingCategories = popularCategories?.map((cat: any) => ({
-    name: cat.name,
-    count: cat.service_count || 0,
-    growth: "+0%", // Growth calculation would need historical data
-  })) || []
+  // Calculate stats from existing data
+  const totalCategories = allCategories?.length || 0
+  const totalParentCategories = parentCategories.length
 
-  // Get total stats
-  const { count: totalCategories } = await supabase
-    .from("categories")
-    .select("*", { count: "exact", head: true })
-
-  const { count: totalParentCategories } = await supabase
-    .from("categories")
-    .select("*", { count: "exact", head: true })
-    .is("parent_id", null)
-
+  // Get user count in separate query
   const { count: totalUsers } = await supabase
     .from("users")
     .select("*", { count: "exact", head: true })

@@ -1,8 +1,9 @@
 'use client'
 
-import { Home, Search, Compass, Play, MessageCircle, Bell, PlusSquare, User, Briefcase, Menu } from 'lucide-react'
+import { Home, Search, Compass, Play, MessageCircle, Bell, PlusSquare, User, Briefcase, Menu, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { useState, useTransition } from 'react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -35,25 +36,43 @@ const moreLinks = [
 
 export function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+  const [loadingPath, setLoadingPath] = useState<string | null>(null)
+
+  const handleNavigation = (href: string) => {
+    if (pathname === href || isPending) return
+
+    setLoadingPath(href)
+    startTransition(() => {
+      router.push(href)
+    })
+  }
 
   return (
     <aside className="hidden lg:flex fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 flex-col border-r bg-background overflow-y-auto">
       <nav className="flex flex-1 flex-col gap-2 p-4">
         {navigation.map((item) => {
           const isActive = pathname === item.href
+          const isLoading = loadingPath === item.href && isPending
           return (
-            <Link key={item.name} href={item.href}>
-              <Button
-                variant={isActive ? 'secondary' : 'ghost'}
-                className={cn(
-                  'w-full justify-start gap-3 text-base h-12',
-                  isActive && 'bg-secondary font-semibold'
-                )}
-              >
+            <Button
+              key={item.name}
+              variant={isActive ? 'secondary' : 'ghost'}
+              className={cn(
+                'w-full justify-start gap-3 text-base h-12',
+                isActive && 'bg-secondary font-semibold'
+              )}
+              onClick={() => handleNavigation(item.href)}
+              disabled={isPending}
+            >
+              {isLoading ? (
+                <Loader2 style={{ width: '24px', height: '24px' }} className="animate-spin" />
+              ) : (
                 <item.icon style={{ width: '24px', height: '24px' }} />
-                {item.name}
-              </Button>
-            </Link>
+              )}
+              {item.name}
+            </Button>
           )
         })}
 
