@@ -78,15 +78,15 @@ export function RightSidebar() {
       {/* 회사 정보 섹션 */}
       <div className="space-y-4 pt-4 border-t">
         <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
-          <Link href="/about" className="hover:underline">소개</Link>
-          <Link href="/help" className="hover:underline">도움말</Link>
-          <Link href="/press" className="hover:underline">홍보 센터</Link>
-          <Link href="/api" className="hover:underline">API</Link>
-          <Link href="/jobs" className="hover:underline">채용 정보</Link>
-          <Link href="/privacy" className="hover:underline">개인정보처리방침</Link>
-          <Link href="/terms" className="hover:underline">약관</Link>
-          <Link href="/locations" className="hover:underline">위치</Link>
-          <Link href="/language" className="hover:underline">언어</Link>
+          <Link key="about" href="/about" className="hover:underline">소개</Link>
+          <Link key="help" href="/help" className="hover:underline">도움말</Link>
+          <Link key="press" href="/press" className="hover:underline">홍보 센터</Link>
+          <Link key="api" href="/api" className="hover:underline">API</Link>
+          <Link key="jobs" href="/jobs" className="hover:underline">채용 정보</Link>
+          <Link key="privacy" href="/privacy" className="hover:underline">개인정보처리방침</Link>
+          <Link key="terms" href="/terms" className="hover:underline">약관</Link>
+          <Link key="locations" href="/locations" className="hover:underline">위치</Link>
+          <Link key="language" href="/language" className="hover:underline">언어</Link>
         </div>
 
         <p className="text-xs text-muted-foreground">
