@@ -8,28 +8,34 @@ import { createClient } from "@/lib/supabase/server"
 export default async function SearchPage() {
   const supabase = await createClient()
 
-  // Get popular creators (users with most followers)
-  const { data: popularCreators } = await supabase
-    .from("users")
-    .select(`
-      id,
-      username,
-      email,
-      full_name,
-      is_verified,
-      created_at,
-      follower_count:follows!follows_following_id_fkey(count)
-    `)
-    .order("created_at", { ascending: false })
-    .limit(5)
+  // Fetch data in parallel for better performance
+  const [
+    { data: popularCreators },
+    { data: posts }
+  ] = await Promise.all([
+    // Get popular creators (users with most followers)
+    supabase
+      .from("users")
+      .select(`
+        id,
+        username,
+        email,
+        full_name,
+        is_verified,
+        created_at,
+        follower_count:follows!follows_following_id_fkey(count)
+      `)
+      .order("created_at", { ascending: false })
+      .limit(5),
 
-  // Get trending tags from recent posts
-  const { data: posts } = await supabase
-    .from("posts")
-    .select("tags")
-    .not("tags", "is", null)
-    .order("created_at", { ascending: false })
-    .limit(50)
+    // Get trending tags from recent posts
+    supabase
+      .from("posts")
+      .select("tags")
+      .not("tags", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(50)
+  ])
 
   // Extract and count unique tags
   const tagCounts: { [key: string]: number } = {}

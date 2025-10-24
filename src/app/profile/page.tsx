@@ -33,37 +33,45 @@ export default async function ProfilePage() {
     redirect("/login")
   }
 
-  // Get user's posts
-  const { data: posts } = await supabase
-    .from("posts")
-    .select("*")
-    .eq("user_id", user.id)
-    .eq("is_portfolio", true)
-    .order("created_at", { ascending: false })
+  // Fetch all data in parallel for better performance
+  const [
+    { data: posts },
+    { count: followerCount },
+    { count: followingCount },
+    { data: reviews }
+  ] = await Promise.all([
+    // Get user's posts
+    supabase
+      .from("posts")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("is_portfolio", true)
+      .order("created_at", { ascending: false }),
 
-  // Get follower count
-  const { count: followerCount } = await supabase
-    .from("follows")
-    .select("*", { count: "exact", head: true })
-    .eq("following_id", user.id)
+    // Get follower count
+    supabase
+      .from("follows")
+      .select("*", { count: "exact", head: true })
+      .eq("following_id", user.id),
 
-  // Get following count
-  const { count: followingCount } = await supabase
-    .from("follows")
-    .select("*", { count: "exact", head: true })
-    .eq("follower_id", user.id)
+    // Get following count
+    supabase
+      .from("follows")
+      .select("*", { count: "exact", head: true })
+      .eq("follower_id", user.id),
 
-  // Get reviews for this user
-  const { data: reviews } = await supabase
-    .from("reviews")
-    .select(`
-      *,
-      reviewer:reviewer_id(username),
-      order:order_id(title)
-    `)
-    .eq("reviewee_id", user.id)
-    .eq("is_public", true)
-    .order("created_at", { ascending: false })
+    // Get reviews for this user
+    supabase
+      .from("reviews")
+      .select(`
+        *,
+        reviewer:reviewer_id(username),
+        order:order_id(title)
+      `)
+      .eq("reviewee_id", user.id)
+      .eq("is_public", true)
+      .order("created_at", { ascending: false })
+  ])
 
   // Calculate average rating
   const averageRating =
