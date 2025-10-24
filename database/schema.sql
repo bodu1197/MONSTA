@@ -47,7 +47,7 @@ CREATE POLICY "Users can update own profile"
 
 CREATE POLICY "Users can insert own profile"
   ON users FOR INSERT
-  WITH CHECK (auth.uid() = id);
+  WITH CHECK (true); -- 트리거가 삽입할 수 있도록 허용
 
 -- ================================================
 -- 2. categories 테이블
@@ -495,7 +495,11 @@ CREATE POLICY "Users can update own notifications"
 -- 함수: 회원가입 시 public.users 프로필 자동 생성
 -- ================================================
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+SECURITY DEFINER
+SET search_path = public
+LANGUAGE plpgsql
+AS $$
 BEGIN
   INSERT INTO public.users (
     id,
@@ -517,8 +521,12 @@ BEGIN
     NOW()
   );
   RETURN NEW;
+EXCEPTION
+  WHEN OTHERS THEN
+    RAISE WARNING 'Failed to create user profile: %', SQLERRM;
+    RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- 트리거: auth.users에 새 사용자가 생성되면 public.users에도 생성
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;

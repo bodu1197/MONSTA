@@ -115,18 +115,34 @@ export function SignupOverlay() {
       email,
       password,
       options: {
+        emailRedirectTo: `${location.origin}/auth/callback`,
         data: {
           shop_id: shopId,
           shop_name: shopName,
+          user_type: 'buyer',
         },
       },
     });
 
     if (error) {
-      toast.error(error.message);
+      console.error("회원가입 에러:", error);
+      toast.error(`회원가입 실패: ${error.message}`);
+      setIsLoading(false);
+      return;
+    }
+
+    console.log("회원가입 성공:", data);
+
+    if (data.user) {
+      toast.success("회원가입 완료! 로그인 페이지로 이동합니다.");
+      setTimeout(() => {
+        router.push('/login');
+      }, 1000);
     } else {
       toast.success("회원가입이 완료되었습니다! 이메일을 확인해주세요.");
-      router.refresh();
+      setTimeout(() => {
+        router.push('/login');
+      }, 1000);
     }
     setIsLoading(false);
   };
