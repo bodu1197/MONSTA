@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS categories (
 CREATE INDEX IF NOT EXISTS idx_categories_parent_id ON categories(parent_id);
 CREATE INDEX IF NOT EXISTS idx_categories_slug ON categories(slug);
 CREATE INDEX IF NOT EXISTS idx_categories_display_order ON categories(display_order);
+CREATE INDEX IF NOT EXISTS idx_categories_is_popular ON categories(is_popular);
 
 -- categories RLS (모두 읽기 가능)
 ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
