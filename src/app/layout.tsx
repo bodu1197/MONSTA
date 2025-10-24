@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { RightSidebar } from "@/components/layout/RightSidebar";
+import { ThemeProvider } from "next-themes";
 
 const notoSansKr = Noto_Sans_KR({
   subsets: ["latin"],
@@ -30,21 +31,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
+    <html lang="ko" suppressHydrationWarning>
       <body
-        className={`${notoSansKr.variable} antialiased`}
+        className={`${notoSansKr.variable} antialiased no-tap-highlight`}
       >
-        <div className="flex min-h-screen flex-col">
-          <Header />
-          <div className="flex flex-1">
-            <Sidebar />
-            <main className="flex-1 pb-16 lg:pb-0 lg:ml-64 xl:mr-80">
-              {children}
-            </main>
-            <RightSidebar />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="flex min-h-screen flex-col">
+            <Header />
+            <div className="flex flex-1">
+              <Sidebar />
+              <main className="flex-1 pb-14 lg:pb-0 lg:ml-64 xl:mr-80 min-w-0">
+                {children}
+              </main>
+              <RightSidebar />
+            </div>
+            <MobileNav />
           </div>
-          <MobileNav />
-        </div>
+        </ThemeProvider>
       </body>
     </html>
   );
