@@ -1,3 +1,4 @@
 {
-  "functions": {}
+  "functions": {},
+  "//": "This is a dummy file to trigger a new deployment"
 }
