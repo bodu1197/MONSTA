@@ -1,79 +1,115 @@
-import { Settings, MapPin, Clock, MessageCircle, Star, Briefcase } from "lucide-react"
+'use client'
+
+import { Settings, Star, Briefcase } from "lucide-react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { UserTypeToggle } from "@/components/profile/UserTypeToggle"
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/client"
 import type { User, Post, Review } from "@/types/database"
 
-export default async function ProfilePage() {
-  const supabase = await createClient()
+export default function ProfilePage() {
+  const router = useRouter()
+  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<any>(null)
+  const [posts, setPosts] = useState<Post[]>([])
+  const [followerCount, setFollowerCount] = useState(0)
+  const [followingCount, setFollowingCount] = useState(0)
+  const [reviews, setReviews] = useState<any[]>([])
 
-  // Get current user
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser()
+  useEffect(() => {
+    async function loadProfile() {
+      const supabase = createClient()
 
-  if (!authUser) {
-    redirect("/login")
+      // Get current user
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser()
+
+      if (!authUser) {
+        router.push("/login")
+        return
+      }
+
+      // Get user profile
+      const { data: userData } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", authUser.id)
+        .single()
+
+      if (!userData) {
+        router.push("/login")
+        return
+      }
+
+      setUser(userData)
+
+      // Fetch all data in parallel for better performance
+      const [
+        { data: postsData },
+        { count: followers },
+        { count: following },
+        { data: reviewsData }
+      ] = await Promise.all([
+        supabase
+          .from("posts")
+          .select("*")
+          .eq("user_id", userData.id)
+          .eq("is_portfolio", true)
+          .order("created_at", { ascending: false }),
+
+        supabase
+          .from("follows")
+          .select("*", { count: "exact", head: true })
+          .eq("following_id", userData.id),
+
+        supabase
+          .from("follows")
+          .select("*", { count: "exact", head: true })
+          .eq("follower_id", userData.id),
+
+        supabase
+          .from("reviews")
+          .select(`
+            *,
+            reviewer:reviewer_id(username),
+            order:order_id(title)
+          `)
+          .eq("reviewee_id", userData.id)
+          .eq("is_public", true)
+          .order("created_at", { ascending: false })
+      ])
+
+      setPosts(postsData || [])
+      setFollowerCount(followers || 0)
+      setFollowingCount(following || 0)
+      setReviews(reviewsData || [])
+      setLoading(false)
+    }
+
+    loadProfile()
+  }, [router])
+
+  if (loading) {
+    return (
+      <div className="w-full max-w-5xl mx-auto px-4 py-8">
+        <div className="text-center py-12 text-muted-foreground">
+          로딩 중...
+        </div>
+      </div>
+    )
   }
-
-  // Get user profile
-  const { data: user } = await supabase
-    .from("users")
-    .select("*")
-    .eq("id", authUser.id)
-    .single()
 
   if (!user) {
-    redirect("/login")
+    return null
   }
 
-  // Fetch all data in parallel for better performance
-  const [
-    { data: posts },
-    { count: followerCount },
-    { count: followingCount },
-    { data: reviews }
-  ] = await Promise.all([
-    // Get user's posts
-    supabase
-      .from("posts")
-      .select("*")
-      .eq("user_id", user.id)
-      .eq("is_portfolio", true)
-      .order("created_at", { ascending: false }),
-
-    // Get follower count
-    supabase
-      .from("follows")
-      .select("*", { count: "exact", head: true })
-      .eq("following_id", user.id),
-
-    // Get following count
-    supabase
-      .from("follows")
-      .select("*", { count: "exact", head: true })
-      .eq("follower_id", user.id),
-
-    // Get reviews for this user
-    supabase
-      .from("reviews")
-      .select(`
-        *,
-        reviewer:reviewer_id(username),
-        order:order_id(title)
-      `)
-      .eq("reviewee_id", user.id)
-      .eq("is_public", true)
-      .order("created_at", { ascending: false })
-  ])
-
-  // Calculate average rating
   const averageRating =
     reviews && reviews.length > 0
       ? reviews.reduce((sum: number, r: Review) => sum + r.rating, 0) / reviews.length
