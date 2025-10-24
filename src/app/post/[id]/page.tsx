@@ -71,7 +71,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
   const { id } = await params
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-6xl">
+    <div className="w-full max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
       {/* Back Button */}
       <Link href="/">
         <Button variant="ghost" className="mb-4 sm:mb-6">

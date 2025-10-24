@@ -33,7 +33,7 @@ const conversations = [
 
 export default function MessagesPage() {
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="w-full mx-auto px-4 py-8 max-w-6xl">
       <h1 className="text-3xl font-bold mb-8">메시지</h1>
 
       <div className="grid lg:grid-cols-3 gap-6">

@@ -16,7 +16,7 @@ const trendingTags = ["#AI", "#로고디자인", "#웹개발", "#영상편집", 
 
 export default function SearchPage() {
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="w-full mx-auto px-4 py-8 max-w-4xl">
       {/* Search Bar */}
       <div className="mb-8">
         <div className="relative">

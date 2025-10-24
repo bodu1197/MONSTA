@@ -39,7 +39,7 @@ const trendingCategories = [
 
 export default function CategoriesPage() {
   return (
-    <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl">
+    <div className="w-full max-w-6xl mx-auto px-4 py-6 sm:py-8">
       {/* Search Section */}
       <div className="mb-8 sm:mb-12">
         <div className="relative max-w-2xl mx-auto">

@@ -90,7 +90,7 @@ const trendingPosts = [
 
 export default function ExplorePage() {
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="w-full mx-auto px-4 py-8 max-w-6xl">
       {/* Search Section */}
       <div className="mb-12">
         <div className="relative max-w-2xl mx-auto mb-4">

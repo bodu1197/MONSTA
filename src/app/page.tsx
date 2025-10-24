@@ -49,7 +49,7 @@ const posts = [
 
 export default function Home() {
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="w-full max-w-2xl mx-auto px-0">
       {/* Stories Section */}
       <div className="border-b bg-background sticky top-16 z-40 pb-4 pt-4">
         <div className="flex gap-4 overflow-x-auto px-4 scrollbar-hide">
@@ -88,9 +88,9 @@ export default function Home() {
       </div>
 
       {/* Feed Posts */}
-      <div className="pb-4">
+      <div className="pb-4 px-0">
         {posts.map((post) => (
-          <Card key={post.id} className="mb-6 overflow-hidden border rounded-xl shadow-sm">
+          <Card key={post.id} className="mb-6 overflow-hidden border-0 rounded-none sm:border sm:rounded-xl shadow-sm">
             {/* Post Header */}
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-3">

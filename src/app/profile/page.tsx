@@ -93,7 +93,7 @@ const reviews = [
 
 export default function ProfilePage() {
   return (
-    <div className="container mx-auto px-4 py-8 max-w-5xl">
+    <div className="w-full max-w-5xl mx-auto px-4 py-8">
       {/* Profile Header */}
       <Card className="p-8 mb-6">
         <div className="flex flex-col md:flex-row gap-6">

@@ -116,19 +116,30 @@
 }
 
 @layer base {
-  * {
+  *,
+  *::before,
+  *::after {
     @apply border-border outline-ring/50;
+    box-sizing: border-box;
   }
   html {
     overflow-x: hidden;
     max-width: 100vw;
+    width: 100%;
   }
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-noto-sans-kr), 'Noto Sans KR', sans-serif;
     overflow-x: hidden;
     max-width: 100vw;
+    width: 100%;
     position: relative;
+  }
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+    display: block;
   }
 }
 
