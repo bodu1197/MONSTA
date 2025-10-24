@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
@@ -15,6 +15,13 @@ const notoSansKr = Noto_Sans_KR({
 export const metadata: Metadata = {
   title: "돌파구 - 재능과 기회의 연결고리",
   description: "SNS 방식의 새로운 재능 마켓플레이스. 포트폴리오를 공유하고, 크리에이터를 팔로우하며, 기회를 찾아보세요.",
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
 };
 
 export default function RootLayout({
