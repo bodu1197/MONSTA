@@ -37,14 +37,17 @@ CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at DESC);
 -- users RLS
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public profiles are viewable by everyone" ON users;
 CREATE POLICY "Public profiles are viewable by everyone"
   ON users FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Users can update own profile" ON users;
 CREATE POLICY "Users can update own profile"
   ON users FOR UPDATE
   USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can insert own profile" ON users;
 CREATE POLICY "Users can insert own profile"
   ON users FOR INSERT
   WITH CHECK (true); -- 트리거가 삽입할 수 있도록 허용
@@ -74,6 +77,7 @@ CREATE INDEX IF NOT EXISTS idx_categories_is_popular ON categories(is_popular);
 -- categories RLS (모두 읽기 가능)
 ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Categories are viewable by everyone" ON categories;
 CREATE POLICY "Categories are viewable by everyone"
   ON categories FOR SELECT
   USING (true);
@@ -117,18 +121,22 @@ CREATE INDEX IF NOT EXISTS idx_posts_is_available ON posts(is_available_for_orde
 -- posts RLS
 ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Posts are viewable by everyone" ON posts;
 CREATE POLICY "Posts are viewable by everyone"
   ON posts FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Users can create own posts" ON posts;
 CREATE POLICY "Users can create own posts"
   ON posts FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own posts" ON posts;
 CREATE POLICY "Users can update own posts"
   ON posts FOR UPDATE
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own posts" ON posts;
 CREATE POLICY "Users can delete own posts"
   ON posts FOR DELETE
   USING (auth.uid() = user_id);
@@ -155,14 +163,17 @@ CREATE INDEX IF NOT EXISTS idx_follows_created_at ON follows(created_at DESC);
 -- follows RLS
 ALTER TABLE follows ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Follows viewable by everyone" ON follows;
 CREATE POLICY "Follows viewable by everyone"
   ON follows FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Users can follow others" ON follows;
 CREATE POLICY "Users can follow others"
   ON follows FOR INSERT
   WITH CHECK (auth.uid() = follower_id);
 
+DROP POLICY IF EXISTS "Users can unfollow" ON follows;
 CREATE POLICY "Users can unfollow"
   ON follows FOR DELETE
   USING (auth.uid() = follower_id);
@@ -188,14 +199,17 @@ CREATE INDEX IF NOT EXISTS idx_likes_created_at ON likes(created_at DESC);
 -- likes RLS
 ALTER TABLE likes ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Likes viewable by everyone" ON likes;
 CREATE POLICY "Likes viewable by everyone"
   ON likes FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Users can like posts" ON likes;
 CREATE POLICY "Users can like posts"
   ON likes FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can unlike posts" ON likes;
 CREATE POLICY "Users can unlike posts"
   ON likes FOR DELETE
   USING (auth.uid() = user_id);
@@ -226,18 +240,22 @@ CREATE INDEX IF NOT EXISTS idx_comments_created_at ON comments(created_at DESC);
 -- comments RLS
 ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Comments viewable by everyone" ON comments;
 CREATE POLICY "Comments viewable by everyone"
   ON comments FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Users can create comments" ON comments;
 CREATE POLICY "Users can create comments"
   ON comments FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own comments" ON comments;
 CREATE POLICY "Users can update own comments"
   ON comments FOR UPDATE
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own comments" ON comments;
 CREATE POLICY "Users can delete own comments"
   ON comments FOR DELETE
   USING (auth.uid() = user_id);
@@ -264,14 +282,17 @@ CREATE INDEX IF NOT EXISTS idx_stories_created_at ON stories(created_at DESC);
 -- stories RLS
 ALTER TABLE stories ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Active stories viewable by everyone" ON stories;
 CREATE POLICY "Active stories viewable by everyone"
   ON stories FOR SELECT
   USING (expires_at > NOW());
 
+DROP POLICY IF EXISTS "Users can create stories" ON stories;
 CREATE POLICY "Users can create stories"
   ON stories FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own stories" ON stories;
 CREATE POLICY "Users can delete own stories"
   ON stories FOR DELETE
   USING (auth.uid() = user_id);
@@ -334,14 +355,17 @@ CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at DESC);
 -- orders RLS
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own orders" ON orders;
 CREATE POLICY "Users can view own orders"
   ON orders FOR SELECT
   USING (auth.uid() = buyer_id OR auth.uid() = seller_id);
 
+DROP POLICY IF EXISTS "Buyers can create orders" ON orders;
 CREATE POLICY "Buyers can create orders"
   ON orders FOR INSERT
   WITH CHECK (auth.uid() = buyer_id);
 
+DROP POLICY IF EXISTS "Users can update own orders" ON orders;
 CREATE POLICY "Users can update own orders"
   ON orders FOR UPDATE
   USING (auth.uid() = buyer_id OR auth.uid() = seller_id);
@@ -370,18 +394,22 @@ CREATE INDEX IF NOT EXISTS idx_reviews_created_at ON reviews(created_at DESC);
 -- reviews RLS
 ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public reviews viewable by everyone" ON reviews;
 CREATE POLICY "Public reviews viewable by everyone"
   ON reviews FOR SELECT
   USING (is_public = true);
 
+DROP POLICY IF EXISTS "Users can view own reviews" ON reviews;
 CREATE POLICY "Users can view own reviews"
   ON reviews FOR SELECT
   USING (auth.uid() = reviewer_id OR auth.uid() = reviewee_id);
 
+DROP POLICY IF EXISTS "Buyers can create reviews" ON reviews;
 CREATE POLICY "Buyers can create reviews"
   ON reviews FOR INSERT
   WITH CHECK (auth.uid() = reviewer_id);
 
+DROP POLICY IF EXISTS "Sellers can reply to reviews" ON reviews;
 CREATE POLICY "Sellers can reply to reviews"
   ON reviews FOR UPDATE
   USING (auth.uid() = reviewee_id);
@@ -409,10 +437,12 @@ CREATE INDEX IF NOT EXISTS idx_conversations_last_message ON conversations(last_
 -- conversations RLS
 ALTER TABLE conversations ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own conversations" ON conversations;
 CREATE POLICY "Users can view own conversations"
   ON conversations FOR SELECT
   USING (auth.uid() = participant_1_id OR auth.uid() = participant_2_id);
 
+DROP POLICY IF EXISTS "Users can create conversations" ON conversations;
 CREATE POLICY "Users can create conversations"
   ON conversations FOR INSERT
   WITH CHECK (auth.uid() = participant_1_id OR auth.uid() = participant_2_id);
@@ -442,6 +472,7 @@ CREATE INDEX IF NOT EXISTS idx_messages_is_read ON messages(is_read) WHERE is_re
 -- messages RLS
 ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own messages" ON messages;
 CREATE POLICY "Users can view own messages"
   ON messages FOR SELECT
   USING (
@@ -452,10 +483,12 @@ CREATE POLICY "Users can view own messages"
     )
   );
 
+DROP POLICY IF EXISTS "Users can send messages" ON messages;
 CREATE POLICY "Users can send messages"
   ON messages FOR INSERT
   WITH CHECK (auth.uid() = sender_id);
 
+DROP POLICY IF EXISTS "Users can update own messages" ON messages;
 CREATE POLICY "Users can update own messages"
   ON messages FOR UPDATE
   USING (auth.uid() = sender_id);
@@ -484,10 +517,12 @@ CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications(created
 -- notifications RLS
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own notifications" ON notifications;
 CREATE POLICY "Users can view own notifications"
   ON notifications FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own notifications" ON notifications;
 CREATE POLICY "Users can update own notifications"
   ON notifications FOR UPDATE
   USING (auth.uid() = user_id);
